@@ -1,0 +1,21 @@
+name: far
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+  - python=3.9
+  - make=4.3
+  - cmake=3.21
+  - openblas=0.3.18
+  - opencv=4.5.3
+  - dlib-cpp=19.22
+  - scipy=1.7
+  - pyzmq=22.3
+  - toml=0.10
+  - trimesh=3.9
+  - pyzmq=22.3
+  - rtree=0.9
+  - pip
+  - pip:
+    - pycairo==1.20.1
+    - Rtree==0.9.7

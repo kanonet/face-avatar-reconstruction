@@ -1,0 +1,4 @@
+[submodule "contrib/eos"]
+	path = contrib/eos
+	url = https://github.com/kanonet/eos.git
+	branch = devel
