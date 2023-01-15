@@ -40,5 +40,7 @@ Place the converted models inside their respective directories in `face-avatar-r
 To receive the FexMM follow [this instruction](https://github.com/mgrewe/ovmf#fexmm-avatars).
 
 # USAGE
-Once your installation is complete and you converted all required models, you can start using FAR.  
-Have a look at the examples: `examples/fit_single_person.py` (simple) and `examples/fit_and_evaluate_multiple_persons.py` (more complex).
+Once your installation is complete and you have converted all the necessary models, you can finally start using FAR.  
+To create an avatar, you need to provide a series of photographs of a person. Each picture must show the person well-lit and with a neutral expression. You should photograph the person from different angles, with the expression and lighting kept unchanged.  
+You also have to identify [68 facial landmarks](https://ibug.doc.ic.ac.uk/media/uploads/images/300-w/figure_1_68.jpg) in each image. This can be done using [OpenFace](https://github.com/mgrewe/OpenFace), for example. Store the landmarks in an array of shape (68, 2) and save this in a CSV file named `landmark_coordinates_{image name}.csv`.  
+Have a look at the examples: [fit_single_person.py (simple)](examples/fit_single_person.py) and [fit_and_evaluate_multiple_persons.py (more complex)](examples/fit_and_evaluate_multiple_persons.py).
