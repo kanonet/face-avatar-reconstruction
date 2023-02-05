@@ -25,22 +25,23 @@ RENDER_VIEW = False
 class FARModelLoader:
 	def __init__(self, morphable_model: ModelType):
 		if morphable_model in {ModelType.FexMM_AU, ModelType.FexMM_PCA, ModelType.FexMM_NN}:
+			self.model_dir = FAR_DIR / 'data/FexMM'
 			# landmark definitions
-			self.landmark_mapper = FAR_DIR / 'data/FexMM/dlib_landmark_correspondence.txt'
-			self.model_contour = FAR_DIR / 'data/FexMM/fexmm_model_contours.json'
+			self.landmark_mapper = self.model_dir / 'dlib_landmark_correspondence.txt'
+			self.model_contour = self.model_dir / 'fexmm_model_contours.json'
 
 			# Load morphablemodel
 			if morphable_model == ModelType.FexMM_AU:
-				pca_model = FARModel(FAR_DIR / 'data/FexMM/fexmm_id-zfd-only_100.npz')
-				exp_model = FARModel(FAR_DIR / 'data/FexMM/fexmm_exp-au_17.npz')
+				pca_model = FARModel(self.model_dir / 'fexmm_id-zfd-only_100.npz')
+				exp_model = FARModel(self.model_dir / 'fexmm_exp-au_17.npz')
 				use_expression_pca_model = True # True: use pca model, shapes can be negative. False: use blendshapes, shapes must be none negative
 			elif morphable_model == ModelType.FexMM_PCA:
-				pca_model = FARModel(FAR_DIR / 'data/FexMM/fexmm_id-zfd-only_100.npz')
-				exp_model = FARModel(FAR_DIR / 'data/FexMM/fexmm_exp-pca_25.npz')
+				pca_model = FARModel(self.model_dir / 'fexmm_id-zfd-only_100.npz')
+				exp_model = FARModel(self.model_dir / 'fexmm_exp-pca_25.npz')
 				use_expression_pca_model = True
 			elif morphable_model == ModelType.FexMM_NN:
-				pca_model = FARModel(FAR_DIR / 'data/FexMM/fexmm_id-zfd-only_100.npz')
-				exp_model = FARModel(FAR_DIR / 'data/FexMM/fexmm_exp-nn_25.npz')
+				pca_model = FARModel(self.model_dir / 'fexmm_id-zfd-only_100.npz')
+				exp_model = FARModel(self.model_dir / 'fexmm_exp-nn_25.npz')
 				use_expression_pca_model = False
 			pca_model.exp_shapes = exp_model.exp_shapes
 			pca_model.triangles = exp_model.triangles	# close eyes and mouth
@@ -48,34 +49,40 @@ class FARModelLoader:
 			# finally convert to eos
 			self.model, self.edge_topology = pca_model.to_eos(expression_is_pca_model=use_expression_pca_model)
 		elif morphable_model == ModelType.BFM:
+			self.model_dir = FAR_DIR / 'data/BFM2017_nomouth'
 			# landmark definitions
-			self.landmark_mapper = FAR_DIR / 'data/BFM2017_nomouth/ibug_to_bfm2017-1_bfm_nomouth.txt'
-			self.model_contour = FAR_DIR / 'data/BFM2017_nomouth/bfm2017-1_bfm_nomouth_model_contours.json'
+			self.landmark_mapper = self.model_dir / 'ibug_to_bfm2017-1_bfm_nomouth.txt'
+			self.model_contour = self.model_dir / 'bfm2017-1_bfm_nomouth_model_contours.json'
 
 			# Load morphablemodel with expressions
-			self.model = eos.morphablemodel.load_model(str(FAR_DIR / 'data/BFM2017_nomouth/bfm2017-1_bfm_nomouth_199-100.bin'))
+			self.model = FARModel(eos.morphablemodel.load_model(str(self.model_dir / 'bfm2017-1_bfm_nomouth_199-100.bin')))
+			self.model.source_file = 'bfm2017-1_bfm_nomouth_199-100.bin'
+			self.model.texcoords = np.loadtxt(str(self.model_dir / 'texcoords.txt'))
+			self.model = self.model.to_eos(return_edge_topology=False)
 			use_expression_pca_model = True
 
 			#  The edge topology is used to speed up computation of the occluding face contour fitting
-			self.edge_topology = eos.morphablemodel.load_edge_topology(str(FAR_DIR / 'data/BFM2017_nomouth/bfm2017-1_bfm_nomouth_edge_topology.json'))
+			self.edge_topology = eos.morphablemodel.load_edge_topology(str(self.model_dir / 'bfm2017-1_bfm_nomouth_edge_topology.json'))
 		elif morphable_model == ModelType.FaceGen:
+			self.model_dir = FAR_DIR / 'data/FaceGen'
 			# landmark definitions
-			self.landmark_mapper = FAR_DIR / 'data/FaceGen/dlib_landmark_correspondence.txt'
-			self.model_contour = FAR_DIR / 'data/FaceGen/model_contours.json'
+			self.landmark_mapper = self.model_dir / 'dlib_landmark_correspondence.txt'
+			self.model_contour = self.model_dir / 'model_contours.json'
 
 			# Load morphablemodel
-			pca_model = FARModel(FAR_DIR / 'data/FaceGen/facegen_au_80-16.npz')
+			pca_model = FARModel(self.model_dir / 'facegen_au_80-16.npz')
 			use_expression_pca_model = True
 
 			# finally convert to eos
 			self.model, self.edge_topology = pca_model.to_eos(expression_is_pca_model=use_expression_pca_model)
 		elif morphable_model == ModelType.FLAME:
+			self.model_dir = FAR_DIR / 'data/FLAME'
 			# landmark definitions
-			self.landmark_mapper = FAR_DIR / 'data/FLAME/dlib_landmark_correspondence.txt'
-			self.model_contour = FAR_DIR / 'data/FLAME/model_contours.json'
+			self.landmark_mapper = self.model_dir / 'dlib_landmark_correspondence.txt'
+			self.model_contour = self.model_dir / 'model_contours.json'
 
 			# Load morphablemodel
-			pca_model = FARModel(FAR_DIR / 'data/FLAME/flame_pca_300-100.npz')
+			pca_model = FARModel(self.model_dir / 'flame_pca_300-100.npz')
 			use_expression_pca_model = True
 
 			# finally convert to eos
@@ -105,7 +112,7 @@ class FaceAvatarReconstruction:
 		self.eos_model = FARModelLoader(morphable_model)
 
 		# Prepare texture merger
-		self.tex_merger = TextureMerger(TEXTURE_RESOLUTION, FAR_DIR/'data/FexMM/segment_mask.png', FAR_DIR/'data/FexMM/front_mask.png', FAR_DIR/'data/FexMM/reference_texture.png', 80)
+		self.tex_merger = TextureMerger(TEXTURE_RESOLUTION, self.eos_model.model_dir/'segment_mask.png', self.eos_model.model_dir/'front_mask.png', self.eos_model.model_dir/'reference_texture.png', 80)
 
 
 	def reconstructAvatar(self, image_path, lambda_sh: float, lambda_expr: float, out_dir: Path, mesh_name : str = 'neutral', generate_texture: bool = False):

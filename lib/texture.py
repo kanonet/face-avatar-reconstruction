@@ -29,8 +29,11 @@ class TextureMerger:
 			self.cam_mask = cv2.resize(self.cam_mask, (tex_resolution, tex_resolution), interpolation=cv2.INTER_NEAREST)
 		self.best_cams = np.zeros((u.shape[0] - 1, NUM_CAMS_SAME_ANGLE), int)
 		self.front_mask = cv2.imread(str(front_mask))[..., 0]
+		if self.front_mask.shape[0] != tex_resolution:
+			self.front_mask = cv2.resize(self.front_mask, (tex_resolution, tex_resolution), interpolation=cv2.INTER_NEAREST)
 		self.ref_tex = cv2.imread(str(ref_tex))[..., 0:3]
-		self.ref_tex = cv2.resize(self.ref_tex, (tex_resolution, tex_resolution), interpolation=cv2.INTER_NEAREST)
+		if self.ref_tex.shape[0] != tex_resolution:
+			self.ref_tex = cv2.resize(self.ref_tex, (tex_resolution, tex_resolution))
 		self.tex_resolution = tex_resolution
 		self.reset()
 
