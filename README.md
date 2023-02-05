@@ -35,7 +35,7 @@ FAR comes with a [fork](https://github.com/kanonet/eos) of [EOS](https://github.
 ## 4. Convert morphable models
 Convert the 3d morphable models to the EOS/FAR model format.  
 Converter scripts for FexMM, FaceGen and FLAME can be found in the directory `face-avatar-reconstruction/converter`.  
-For BFM use the converter script in the directory `face-avatar-reconstruction/contrib/eos/share/scripts`. (To use BFM you will need to copy some additional files from EOS repository to FAR.)  
+For BFM use the converter script in the directory `face-avatar-reconstruction/contrib/eos/share/scripts`.
 Place the converted models inside their respective directories in `face-avatar-reconstruction/data/`.  
 To receive the FexMM follow [this instruction](https://github.com/mgrewe/ovmf#fexmm-avatars).
 
