@@ -13,7 +13,7 @@ from lib.spherical_harmonics import generateNormalmap, generateAlbedomap
 
 FAR_DIR = Path(__file__).resolve().parents[1]
 ModelType = Enum('ModelType', 'FexMM_AU FexMM_PCA FexMM_NN BFM FaceGen FLAME')
-FittingMode = Enum('FittingMode', 'iterating collective')	# Iterating is always supported. Collective is only supported if expressions are loaded as array of blendshapes.
+FittingMode = Enum('FittingMode', 'iterating collective')	# Iterating is always supported. Collective is only supported if expressions are loaded as array of blendshapes (currently only with FexMM_NN).
 
 
 NUM_ITERATIONS = 100	# for single image fitting: should be a multiple of 5
@@ -162,7 +162,7 @@ class FaceAvatarReconstruction:
 			return None, [], [], [], []
 		else:
 			# Fit the model
-			if self.fitting_mode:
+			if self.fitting_mode == FittingMode.iterating:
 				s = 0
 				meshs, poses, ex_coeffs = [[]]*n, [[]]*n, []
 				id_coeffs = []
