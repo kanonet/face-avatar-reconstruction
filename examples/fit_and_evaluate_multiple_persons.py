@@ -100,7 +100,7 @@ def tuneEOS():
 	CSV_FILE = OUTPUT_DIR.parents[0] / 'diff.csv'
 	DATA_FILE = OUTPUT_DIR.parents[0] / 'data.csv'
 
-	ids = [f.name for f in filter(Path.is_dir, INPUT_DIR.iterdir())][:6]
+	ids = [f.name for f in filter(Path.is_dir, INPUT_DIR.iterdir())]
 	exprs = ['neutral']
 	sh_lambdas = [1000, 2000]
 	expr_lambdas = [100000]
