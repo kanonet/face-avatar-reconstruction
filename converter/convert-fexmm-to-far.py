@@ -22,19 +22,19 @@ if True:	# identity
 	BLENDER_MESH_OBJ = 'fexmm_zfd_only'
 	EOS_SCALE_FACTOR = 1.0	# this does affect accuracy!
 	# you need to specify which shape modes to export! all available keys: obj.data.shape_keys.key_blocks.keys()
-	pca_shapes = [f'{i:04}_std_pca{i}' for i in range(1, 101)]
-	exp_shapes = []
+	PCA_SHAPES = [f'{i:04}_std_pca{i}' for i in range(1, 101)]
+	EXP_SHAPES = []
 else: # expressions
 	IMPORT_FILE = DIR / '2020_06_17_FexMM_pure.blend'
 	BLENDER_SHAPES_OBJ = 'FexMM'
 	BLENDER_MESH_OBJ = 'FexMM_eyes_mouth_closed_smoothed'
 	EOS_SCALE_FACTOR = 100.0	# this does affect accuracy!
 	# you need to specify which shape modes to export! all available keys: obj.data.shape_keys.key_blocks.keys()
-	pca_shapes = [f'neu_pca_{i}' for i in range(1, 26)]
-	pca_shapes += [f'neu_asym_pca_{i}' for i in range(1, 6)]
-	exp_shapes = [f'exp_pca_{i}' for i in range(1, 26)]	# pca expressions
-	# exp_shapes = [f'exp_pca_nn_{i}' for i in range(1, 26)]	# non negative pca expressions
-	# exp_shapes = ['AU_1', 'AU_2', 'AU_4', 'AU_5', 'AU_6', 'AU_7', 'AU_9', 'AU_10', 'AU_12', 'AU_13', 'AU_14', 'AU_15', 'AU_17', 'AU_20', 'AU_23', 'AU_25', 'AU_26']	# action unit blendshape expressions
+	PCA_SHAPES = [f'neu_pca_{i}' for i in range(1, 26)]
+	PCA_SHAPES += [f'neu_asym_pca_{i}' for i in range(1, 6)]
+	EXP_SHAPES = [f'exp_pca_{i}' for i in range(1, 26)]	# pca expressions
+	# EXP_SHAPES = [f'exp_pca_nn_{i}' for i in range(1, 26)]	# non negative pca expressions
+	# EXP_SHAPES = ['AU_1', 'AU_2', 'AU_4', 'AU_5', 'AU_6', 'AU_7', 'AU_9', 'AU_10', 'AU_12', 'AU_13', 'AU_14', 'AU_15', 'AU_17', 'AU_20', 'AU_23', 'AU_25', 'AU_26']	# action unit blendshape expressions
 
 SAVE_MODEL = True
 EXPORT_FILE = DIR / 'fexmm_id-zfd-only_100_2.npz' # suffix must be .json, .csv or .npz
@@ -56,7 +56,7 @@ def get_model(obj, mesh, pca_shapes, exp_shapes):
 			shape = obj.data.shape_keys.key_blocks[sw_name].data
 			keys.append(sw_name)
 			shapes.append([list(shape[v.index].co - average[v.index].co) for v in obj.data.vertices])
-		return [keys, shapes]
+		return [keys, np.multiply(shapes, EOS_SCALE_FACTOR).tolist()]
 	model = FARModel()
 	model.source_file = str(IMPORT_FILE)
 	model.pca_shapes = get_shape_modes(pca_shapes)
@@ -65,7 +65,7 @@ def get_model(obj, mesh, pca_shapes, exp_shapes):
 	# get mesh
 	me = mesh.data
 	uv_layer = me.uv_layers.active.data
-	model.vertices = [[*v.co] for v in me.vertices]
+	model.vertices = np.multiply([[*v.co] for v in me.vertices], EOS_SCALE_FACTOR).tolist()
 	model.texcoords = [[0, 0]] * len(model.vertices)
 	model.triangles = []
 	for face in me.polygons:
@@ -85,13 +85,11 @@ def run_inside_blender():
 
 	obj = bpy.data.objects[BLENDER_SHAPES_OBJ]
 	obj.matrix_world = np.identity(4)	# Remove any trafo
-	obj.scale = (EOS_SCALE_FACTOR, EOS_SCALE_FACTOR, EOS_SCALE_FACTOR)
 	mesh = bpy.data.objects[BLENDER_MESH_OBJ]
 	mesh.matrix_world = np.identity(4)	# Remove any trafo
-	mesh.scale = (EOS_SCALE_FACTOR, EOS_SCALE_FACTOR, EOS_SCALE_FACTOR)
 	bpy.ops.object.transform_apply()
 
-	model = get_model(obj, mesh, pca_shapes, exp_shapes)
+	model = get_model(obj, mesh, PCA_SHAPES, EXP_SHAPES)
 
 	print('serialized model:', json.dumps(model.dict), flush=True)
 
